@@ -1,5 +1,6 @@
 <?php
 
+use DialogFlow\Model\Context;
 use DialogFlow\Model\Webhook\Request;
 use PHPUnit\Framework\TestCase;
 
@@ -16,43 +17,53 @@ class RequestTest extends TestCase {
    * Tests request from Dialogflow is correctly processed.
    */
   public function testRequest() {
+    // V1 JSON example, extended from:
+    // https://github.com/dialogflow/fulfillment-webhook-json/blob/master/requests/v1/request.json
     $body = <<<EOL
 {
-  "id": "",
-  "timestamp": "2017-08-30T03:35:53.052Z",
-  "lang": "en",
+  "originalRequest": {},
+  "id": "7811ac58-5bd5-4e44-8d06-6cd8c67f5406",
+  "sessionId": "1515191296300",
+  "timestamp": "2018-01-05T22:35:05.903Z",
+  "timezone": "",
+  "lang": "en-us",
   "result": {
     "source": "agent",
-    "resolvedQuery": "query would go here",
-    "speech": "",
-    "action": "userinfo",
+    "resolvedQuery": "user's original query to your agent",
+    "speech": "Text defined in Dialogflow's console for the intent that was matched",
+    "action": "Matched Dialogflow intent action name",
     "actionIncomplete": false,
     "parameters": {
-      "Staff": "John"
+      "param": "param value"
     },
-    "contexts": [],
+    "contexts": [
+      {
+        "name": "incoming context name",
+        "parameters": {
+          "param1": "foo",
+          "param2": "bar"
+        },
+        "lifespan": 5
+      }
+    ],
     "metadata": {
-      "intentId": "userinfo123",
+      "intentId": "29bcd7f8-f717-4261-a8fd-2d3e451b8af8",
       "webhookUsed": "true",
       "webhookForSlotFillingUsed": "false",
-      "intentName": "UserInfo"
+      "nluResponseTime": 6,
+      "intentName": "Name of Matched Dialogflow Intent"
     },
     "fulfillment": {
-      "speech": "",
+      "speech": "Text defined in Dialogflow's console for the intent that was matched",
       "messages": [
         {
           "type": 0,
-          "speech": ""
+          "speech": "Text defined in Dialogflow's console for the intent that was matched"
         }
       ]
     },
-    "score": 1.0
-  },
-  "status": {
-    "code": 200,
-    "errorType": "success"
-  },
-  "sessionId": "2b0d2a35-293d-4175-94ba-f399e0bde1bd"
+    "score": 1
+  }
 }
 EOL;
     $body_decoded = json_decode($body, TRUE);
@@ -61,7 +72,10 @@ EOL;
     $this->assertEquals($body_decoded['timestamp'], $request->getTimestamp());
     $this->assertEquals($body_decoded['result']['metadata']['intentId'], $request->getResult()->getMetadata()->getIntentId());
     $this->assertEquals($body_decoded['result']['metadata']['intentName'], $request->getResult()->getMetadata()->getIntentName());
-    $this->assertEquals('John', $request->getResult()->getParameters()['Staff']);
+    $this->assertEquals('param value', $request->getResult()->getParameters()['param']);
+
+    $context = new Context($body_decoded['result']['contexts'][0]);
+    $this->assertEquals([$context], $request->getResult()->getContexts());
   }
 
 }
