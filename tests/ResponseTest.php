@@ -1,7 +1,6 @@
 <?php
 
 use DialogFlow\Model\Context;
-use DialogFlow\Model\Webhook\Request;
 use DialogFlow\Model\Webhook\Response;
 use PHPUnit\Framework\TestCase;
 
