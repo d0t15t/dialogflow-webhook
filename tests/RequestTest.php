@@ -7,16 +7,21 @@ use PHPUnit\Framework\TestCase;
 /**
  * Test the webhook request model.
  *
- * @covers \DialogFlow\Model\Webhook\Request
- * @covers \DialogFlow\Model\Query
- * @covers \DialogFlow\Model\QueryResult
+ * Tests request from Dialogflow is correctly processed.
  */
 class RequestTest extends TestCase {
 
   /**
-   * Tests request from Dialogflow is correctly processed.
+   * Requested body JSON-encoded.
+   *
+   * @var array
    */
-  public function testRequest() {
+  protected $request_body;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
     // V1 JSON example, extended from:
     // https://github.com/dialogflow/fulfillment-webhook-json/blob/master/requests/v1/request.json
     $body = <<<EOL
@@ -34,7 +39,8 @@ class RequestTest extends TestCase {
     "action": "Matched Dialogflow intent action name",
     "actionIncomplete": false,
     "parameters": {
-      "param": "param value"
+      "param1": "foo",
+      "param2": "bar"
     },
     "contexts": [
       {
@@ -66,16 +72,86 @@ class RequestTest extends TestCase {
   }
 }
 EOL;
-    $body_decoded = json_decode($body, TRUE);
-    $request = new Request($body_decoded);
 
-    $this->assertEquals($body_decoded['timestamp'], $request->getTimestamp());
-    $this->assertEquals($body_decoded['result']['metadata']['intentId'], $request->getResult()->getMetadata()->getIntentId());
-    $this->assertEquals($body_decoded['result']['metadata']['intentName'], $request->getResult()->getMetadata()->getIntentName());
-    $this->assertEquals('param value', $request->getResult()->getParameters()['param']);
+    $this->request_body = json_decode($body, TRUE);
+  }
 
-    $context = new Context($body_decoded['result']['contexts'][0]);
+  /**
+   * Test general request values.
+   *
+   * @covers \DialogFlow\Model\Webhook\Request
+   * @covers \DialogFlow\Model\Query
+   */
+  public function testGeneralData() {
+    $request = new Request($this->request_body);
+
+    $this->assertEquals('2018-01-05T22:35:05.903Z', $request->getTimestamp());
+    $this->assertEquals('7811ac58-5bd5-4e44-8d06-6cd8c67f5406',$request->getId());
+    $this->assertEquals('1515191296300',$request->getSessionId());
+    $this->assertEquals(1, $request->getResult()->getScore());
+
+    // 'status' is covered by the library, but it's not a valid webhook request
+    // property, so this should be null.
+    $this->assertNull($request->getStatus());
+  }
+
+  /**
+   * Test request metadata.
+   *
+   * @covers \DialogFlow\Model\Metadata
+   */
+  public function testMetadata() {
+    $request = new Request($this->request_body);
+    $metadata = $request->getResult()->getMetadata();
+
+    $this->assertEquals('29bcd7f8-f717-4261-a8fd-2d3e451b8af8', $metadata->getIntentId());
+    $this->assertEquals('Name of Matched Dialogflow Intent', $metadata->getIntentName());
+    $this->assertEquals('true', $metadata->getWebhookUsed());
+  }
+
+  /**
+   * Test request params.
+   *
+   * @covers \DialogFlow\Model\QueryResult::getParameters()
+   */
+  public function testParameters() {
+    $request = new Request($this->request_body);
+    $this->assertEquals('foo', $request->getResult()->getParameters()['param1']);
+    $this->assertEquals('bar', $request->getResult()->getParameters()['param2']);
+    $this->assertCount(2, $request->getResult()->getParameters());
+  }
+
+  /**
+   * Test request contexts.
+   *
+   * @covers \DialogFlow\Model\Context
+   */
+  public function testContexts() {
+    $request = new Request($this->request_body);
+    $context = new Context();
+    $context->add('name', 'incoming context name');
+    $context->add('parameters', ['param1' => 'foo', 'param2' => 'bar']);
+    $context->add('lifespan', 5);
+
     $this->assertEquals([$context], $request->getResult()->getContexts());
+  }
+
+  /**
+   * Tests request fulfillment.
+   *
+   * @covers \DialogFlow\Model\Fulfillment
+   */
+  public function testFulfillment() {
+    $request = new Request($this->request_body);
+    $fulfillment = $request->getResult()->getFulfillment();
+
+    $this->assertEquals('Text defined in Dialogflow\'s console for the intent that was matched', $fulfillment->getSpeech());
+
+    // This is the fulfillment suggested by Dialogflow in the Request, so it
+    // shouldn't have properties only existing in the Response fulfillment.
+    $this->assertNull($fulfillment->getContextOut());
+    $this->assertNull($fulfillment->getDisplayText());
+    $this->assertNull($fulfillment->getSource());
   }
 
 }
