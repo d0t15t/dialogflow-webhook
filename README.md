@@ -1,6 +1,7 @@
 DialogFlow PHP sdk
 ==============
 
+[![Build Status](https://travis-ci.org/gambry/dialogflow.svg?branch=v2.x)](https://travis-ci.org/gambry/dialogflow)
 [![version][packagist-version]][packagist-url]
 [![Downloads][packagist-downloads]][packagist-url]
 
