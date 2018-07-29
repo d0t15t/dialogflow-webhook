@@ -9,44 +9,32 @@ namespace DialogFlow\Model;
  */
 class Fulfillment extends Base
 {
+
     /**
      * @return string
+     */
+    public function getText() {
+        return parent::get('text');
+    }
+
+    /**
+     * @return string
+     *
+     * @deprecated use getText().
      */
     public function getSpeech()
     {
-        return parent::get('speech');
+        return $this->getText();
     }
 
     /**
      * @return string
-     */
-    public function getSource()
-    {
-        return parent::get('source');
-    }
-
-    /**
-     * @return string
+     *
+     * @deprecated use getText().
      */
     public function getDisplayText()
     {
-        return parent::get('displayText');
-    }
-
-    /**
-     * @return array
-     */
-    public function getData()
-    {
-        return parent::get('data', []);
-    }
-
-    /**
-     * @return array
-     */
-    public function getContextOut()
-    {
-        return parent::get('contextOut');
+        return $this->getText();
     }
 
 }

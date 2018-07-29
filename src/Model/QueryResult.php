@@ -16,18 +16,18 @@ class QueryResult extends Base
      */
     public function __construct(array $data)
     {
-        if (!empty($data['contexts'])) {
-            foreach ($data['contexts'] as $key => $context) {
+        if (!empty($data['outputContexts'])) {
+            foreach ($data['outputContexts'] as $key => $context) {
                 $data['contexts'][$key] = new Context($context);
             }
         }
 
-        if (!empty($data['fulfillment'])) {
-            $data['fulfillment'] = new Fulfillment($data['fulfillment']);
+        if (!empty($data['fulfillmentText'])) {
+            $data['fulfillment'] = new Fulfillment(['text' => $data['fulfillmentText']]);
         }
 
-        if (!empty($data['metadata'])) {
-            $data['metadata'] = new Metadata($data['metadata']);
+        if (!empty($data['intent'])) {
+            $data['intent'] = new Intent($data['intent']);
         }
 
         parent::__construct($data);
@@ -90,19 +90,39 @@ class QueryResult extends Base
     }
 
     /**
-     * @return Metadata
+     * @return Intent
+     */
+    public function getIntent()
+    {
+        return parent::get('intent');
+    }
+
+    /**
+     * @return Intent
+     *
+     * @deprecated use getIntent()
+     *
      */
     public function getMetadata()
     {
-        return parent::get('metadata');
+        return $this->getIntent();
     }
 
     /**
      * @return float
      */
+    public function getIntentDetectionConfidence() {
+        return parent::get('intentDetectionConfidence');
+    }
+
+    /**
+     * @return float
+     *
+     * @deprecated use getIntentDetectionConfidence().
+     */
     public function getScore()
     {
-        return parent::get('score');
+        return $this->getIntentDetectionConfidence();
     }
 
 }

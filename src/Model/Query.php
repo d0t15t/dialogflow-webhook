@@ -16,14 +16,12 @@ class Query extends Base
      */
     public function __construct($data = [])
     {
-        if ($data['timestamp'] instanceof \DateTime) {
-            $data['timestamp'] = $data['timestamp']->format(DATE_ISO8601);
+
+        if (!empty($data['queryResult'])) {
+            $data['queryResult'] = new QueryResult($data['queryResult']);
         }
 
-        if (!empty($data['result'])) {
-            $data['result'] = new QueryResult($data['result']);
-        }
-
+        // @TODO: Is this still needed in V2?
         if (!empty($data['status'])) {
             $data['status'] = new Status($data['status']);
         }
@@ -36,17 +34,7 @@ class Query extends Base
      */
     public function getId()
     {
-        return parent::get('id');
-    }
-
-    /**
-     * Return the timestamp in the ISO8601 format
-     *
-     * @return string
-     */
-    public function getTimestamp()
-    {
-        return parent::get('timestamp');
+        return parent::get('responseId');
     }
 
     /**
@@ -54,15 +42,15 @@ class Query extends Base
      */
     public function getResult()
     {
-        return parent::get('result');
+        return parent::get('queryResult');
     }
 
     /**
-     * @return Status
+     * @return string
      */
-    public function getStatus()
+    public function getSession()
     {
-        return parent::get('status');
+        return parent::get('session');
     }
 
     /**
@@ -70,7 +58,8 @@ class Query extends Base
      */
     public function getSessionId()
     {
-        return parent::get('sessionId');
+      $session_components = explode('/', parent::get('session'));
+      return end($session_components);
     }
 
 }
