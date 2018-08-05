@@ -18,7 +18,6 @@ class ResponseTest extends TestCase {
 
     $response = new Response();
     $response->setSpeech('this text is spoken out loud if the platform supports voice interactions');
-    $response->setDisplayText('this text is displayed visually');
 
     $context = new Context();
     $context->add('name', 'projects/your-agents-project-id/agent/sessions/88d13aa8-2999-4f71-b233-39cbf3a824a0/contexts/context-name');
@@ -46,7 +45,7 @@ class ResponseTest extends TestCase {
 }
 EOL;
 
-    $this->assertEquals(json_encode(json_decode($expected_response)), json_encode($response->jsonSerialize()));
+    $this->assertEquals(json_encode(json_decode($expected_response)), json_encode($response));
   }
 
 }
