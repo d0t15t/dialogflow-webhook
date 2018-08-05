@@ -1,4 +1,4 @@
-DialogFlow PHP sdk
+DialogFlow Webhook Fulfillment PHP sdk
 ==============
 
 [![Build Status](https://travis-ci.org/gambry/dialogflow.svg?branch=v2.x)](https://travis-ci.org/gambry/dialogflow)
@@ -9,7 +9,9 @@ DialogFlow PHP sdk
 [packagist-version]: https://img.shields.io/packagist/v/iboldurev/dialogflow.svg?style=flat
 [packagist-downloads]: https://img.shields.io/packagist/dm/iboldurev/dialogflow.svg?style=flat
 
-This is an unofficial php sdk for [Dialogflow][1] and it's still in progress...
+This is an unofficial php sdk for [Dialogflow][1] [Fulfillment][2].
+
+If you are looking for [Detect Intent and Agent APIs][3] php sdk have a look a the [official repo][https://github.com/GoogleCloudPlatform/google-cloud-php-dialogflow].
 
 ```
 Dialogflow: Build brand-unique, natural language interactions for bots, applications and devices.
@@ -20,157 +22,32 @@ Dialogflow: Build brand-unique, natural language interactions for bots, applicat
 Via composer:
 
 ```
-$ composer require iboldurev/dialogflow
+$ composer require gambry/dialogflow-webhook
 ```
 
 ## Usage:
 
-Using the low level `Client`:
-
+In your webhook request handler:
 ```php
 require_once __DIR__.'/vendor/autoload.php';
 
-use DialogFlow\Client;
-
-try {
-    $client = new Client('access_token');
-
-    $query = $client->get('query', [
-        'query' => 'Hello',
-    ]);
-
-    $response = json_decode((string) $query->getBody(), true);
-} catch (\Exception $error) {
-    echo $error->getMessage();
-}
-```
-
-## Usage:
-
-Using the low level `Query`:
-
-```php
-require_once __DIR__.'/vendor/autoload.php';
-
-use DialogFlow\Client;
-use DialogFlow\Model\Query;
-use DialogFlow\Method\QueryApi;
-
-try {
-    $client = new Client('access_token');
-    $queryApi = new QueryApi($client);
-
-    $meaning = $queryApi->extractMeaning('Hello', [
-        'sessionId' => '1234567890',
-        'lang' => 'en',
-    ]);
-    $response = new Query($meaning);
-} catch (\Exception $error) {
-    echo $error->getMessage();
-}
-```
-
-## Usage
-
-Using the low level asynchronous api:
-
-```php
-require_once __DIR__.'/vendor/autoload.php';
-
-use DialogFlow\Client;
-use DialogFlow\Model\Query;
-use DialogFlow\Method\QueryApi;
-use GuzzleHttp\HandlerStack;
-use React\EventLoop\Factory;
-use WyriHaximus\React\GuzzlePsr7\HttpClientAdapter;
-
-$loop = Factory::create();
-$reactGuzzle = new \GuzzleHttp\Client([
-    'base_uri' => Client::API_BASE_URI . Client::DEFAULT_API_ENDPOINT,
-    'timeout' => Client::DEFAULT_TIMEOUT,
-    'connect_timeout' => Client::DEFAULT_TIMEOUT,
-    'handler' => HandlerStack::create(new HttpClientAdapter($loop))
-]);
-
-$client = new Client('bc0a6d712bba4b3c8063a9c7ff0fa4ea', new DialogFlow\HttpClient\GuzzleHttpClient($reactGuzzle));
-$queryApi = new QueryApi($client);
-
-$queryApi->extractMeaningAsync('Hello', [
-    'sessionId' => '123456789',
-    'lang' => 'en'
-])->then(
-    function ($meaning) {
-        $response = new Query($meaning);
-    },
-    function ($error) {
-        echo $error;
-    }
-);
-
-$loop->run();
-```
-
-## Dialog
-
-The `Dialog` class provides an easy way to use the `query` api and execute automatically the chaining steps :
-
-First, you need to create an `ActionMapping` class to customize the actions behavior.
-
-```php
-namespace Custom;
-
-class MyActionMapping extends ActionMapping
-{
-    /**
-     * @inheritdoc
-     */
-    public function action($sessionId, $action, $parameters, $contexts)
-    {
-        return call_user_func_array(array($this, $action), array($sessionId, $parameters, $contexts));
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function speech($sessionId, $speech, $contexts)
-    {
-        echo $speech;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function error($sessionId, $error)
-    {
-        echo $error;
+if ($webhook_json = json_decode($request_body, TRUE)) {
+    $request = new \DialogFlow\Model\Webhook\Request($webhook_json);
+    $intent_name = $request->getResult()->getIntent()->getIntentName();
+    
+    if ($intent_name === 'HelloWorld') {
+        $fulfillment = new \DialogFlow\Model\Fulfillment();
+        $fulfillment->setText('Hi from the fulfilment!');
+        
+        $response = new \DialogFlow\Model\Webhook\Response();
+        $response->setFulfillment($fulfillment);
+        
+        echo json_encode($response);
     }
 }
-
 ```
-
-And using it in the `Dialog` class.
-
-```php
-require_once __DIR__.'/vendor/autoload.php';
-
-use DialogFlow\Client;
-use DialogFlow\Method\QueryApi;
-use DialogFlow\Dialog;
-use Custom\MyActionMapping;
-
-try {
-    $client = new Client('access_token');
-    $queryApi = new QueryApi($client);
-    $actionMapping = new MyActionMapping();
-    $dialog = new Dialog($queryApi, $actionMapping);
-
-    // Start dialog ..
-    $dialog->create('1234567890', 'Привет', 'ru');
-
-} catch (\Exception $error) {
-    echo $error->getMessage();
-}
-
-```
+**Note: depending by the way you handle the request the autoloader, the `$request_body` variable, and the way to return the `$response` may vary.**
 
 [1]: https://dialogflow.com
+[2]: https://dialogflow.com/docs/sdks#fulfillment
+[3]: https://dialogflow.com/docs/sdks#detect_intent_and_agent_apis
