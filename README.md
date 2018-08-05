@@ -1,13 +1,13 @@
 DialogFlow Webhook Fulfillment PHP sdk
 ==============
 
-[![Build Status](https://travis-ci.org/gambry/dialogflow.svg?branch=v2.x)](https://travis-ci.org/gambry/dialogflow)
+[![Build Status](https://travis-ci.org/gambry/dialogflow-webhook.svg?branch=v2.x)](https://travis-ci.org/gambry/dialogflow-webhook)
 [![version][packagist-version]][packagist-url]
 [![Downloads][packagist-downloads]][packagist-url]
 
-[packagist-url]: https://packagist.org/packages/iboldurev/dialogflow
-[packagist-version]: https://img.shields.io/packagist/v/iboldurev/dialogflow.svg?style=flat
-[packagist-downloads]: https://img.shields.io/packagist/dm/iboldurev/dialogflow.svg?style=flat
+[packagist-url]: https://packagist.org/packages/gambry/dialogflow-webhook
+[packagist-version]: https://img.shields.io/packagist/v/gambry/dialogflow-webhook.svg?style=flat
+[packagist-downloads]: https://img.shields.io/packagist/dm/gambry/dialogflow-webhook.svg?style=flat
 
 This is an unofficial php sdk for [Dialogflow][1] [Fulfillment][2].
 
