@@ -21,7 +21,7 @@ class ResponseTest extends TestCase {
     $response->setDisplayText('this text is displayed visually');
 
     $context = new Context();
-    $context->add('name', 'context name');
+    $context->add('name', 'projects/your-agents-project-id/agent/sessions/88d13aa8-2999-4f71-b233-39cbf3a824a0/contexts/context-name');
     $context->add('lifespan', 5);
     $context->add('parameters', ['param' => 'param value']);
     $response->addContext($context);
@@ -32,12 +32,11 @@ class ResponseTest extends TestCase {
     // https://github.com/dialogflow/fulfillment-webhook-json/blob/master/responses/v1/response.json
     $expected_response = <<<EOL
 {
-  "speech": "this text is spoken out loud if the platform supports voice interactions",
-  "displayText": "this text is displayed visually",
-  "contextOut": [
+  "fulfillmentText": "this text is spoken out loud if the platform supports voice interactions",
+  "outputContexts": [
     {
-      "name": "context name",
-      "lifespan": 5,
+      "name": "projects/your-agents-project-id/agent/sessions/88d13aa8-2999-4f71-b233-39cbf3a824a0/contexts/context-name",
+      "lifespanCount": 5,
       "parameters": {
         "param": "param value"
       }

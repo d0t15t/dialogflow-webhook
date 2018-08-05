@@ -37,4 +37,16 @@ class Fulfillment extends Base
         return $this->getText();
     }
 
+    /**
+     * Return fulfillment messages.
+     *
+     * @return array
+     *   The fulfillment messages.
+     *
+     * TODO: Implement messages.
+     */
+    public function getMessages() {
+        return [];
+    }
+
 }
