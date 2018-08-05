@@ -1,7 +1,7 @@
 DialogFlow Webhook Fulfillment PHP sdk
 ==============
 
-[![Build Status](https://travis-ci.org/gambry/dialogflow-webhook.svg?branch=v2.x)](https://travis-ci.org/gambry/dialogflow-webhook)
+[![Build Status](https://travis-ci.org/gambry/dialogflow-webhook.svg?branch=master)](https://travis-ci.org/gambry/dialogflow-webhook)
 [![version][packagist-version]][packagist-url]
 [![Downloads][packagist-downloads]][packagist-url]
 
