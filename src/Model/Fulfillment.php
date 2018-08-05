@@ -18,6 +18,15 @@ class Fulfillment extends Base
     }
 
     /**
+     * Set fulfilment text.
+     *
+     * @param string $text
+     */
+    public function setText($text) {
+        parent::add('text', $text);
+    }
+
+    /**
      * @return string
      *
      * @deprecated use getText().
