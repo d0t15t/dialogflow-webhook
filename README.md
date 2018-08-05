@@ -11,7 +11,7 @@ DialogFlow Webhook Fulfillment PHP sdk
 
 This is an unofficial php sdk for [Dialogflow][1] [Fulfillment][2].
 
-If you are looking for [Detect Intent and Agent APIs][3] php sdk have a look a the [official repo][https://github.com/GoogleCloudPlatform/google-cloud-php-dialogflow].
+_If you are looking for [Detect Intent and Agent APIs][3] php sdk have a look a the [official repo][4]_.
 
 ```
 Dialogflow: Build brand-unique, natural language interactions for bots, applications and devices.
@@ -51,3 +51,4 @@ if ($webhook_json = json_decode($request_body, TRUE)) {
 [1]: https://dialogflow.com
 [2]: https://dialogflow.com/docs/sdks#fulfillment
 [3]: https://dialogflow.com/docs/sdks#detect_intent_and_agent_apis
+[4]: https://github.com/GoogleCloudPlatform/google-cloud-php-dialogflow
