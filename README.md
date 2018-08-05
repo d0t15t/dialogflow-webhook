@@ -46,7 +46,7 @@ if ($webhook_json = json_decode($request_body, TRUE)) {
     }
 }
 ```
-**Note: depending by the way you handle the request the autoloader, the `$request_body` variable, and the way to return the `$response` may vary.**
+**Note: depending by the way you handle the request the library auto-loading, the `$request_body` variable and the way to return the `$response` may vary.**
 
 [1]: https://dialogflow.com
 [2]: https://dialogflow.com/docs/sdks#fulfillment
