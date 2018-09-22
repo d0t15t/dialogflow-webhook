@@ -46,6 +46,20 @@ class ResponseTest extends TestCase {
 EOL;
 
     $this->assertEquals(json_encode(json_decode($expected_response)), json_encode($response));
+
+    // Test response with session.
+    $response2 = new Response([], 'projects/your-agents-project-id/agent/sessions/88d13aa8-2999-4f71-b233-39cbf3a824a0');
+    $response2->setSpeech('this text is spoken out loud if the platform supports voice interactions');
+
+    $context2 = $response2->createContextFromSession('context-name');
+    $context2->add('name', 'projects/your-agents-project-id/agent/sessions/88d13aa8-2999-4f71-b233-39cbf3a824a0/contexts/context-name');
+    $context2->add('lifespan', 5);
+    $context2->add('parameters', ['param' => 'param value']);
+    $this->assertEquals($context, $context2);
+
+    $response2->addContext($context);
+    $response2->add('source', 'example.com');
+    $this->assertEquals(json_encode(json_decode($expected_response)), json_encode($response2));
   }
 
 }

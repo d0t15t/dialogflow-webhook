@@ -21,6 +21,29 @@ class Response extends Base {
     protected $fulfillment;
 
     /**
+     * The request session, used to prefix contexts automatically, if any.
+     *
+     * @var string
+     */
+    protected $session;
+
+    /**
+     * Response constructor.
+     *
+     * @param array $data
+     *   Response data.
+     *
+     * @param string $request_session
+     *   The request session, used to automatically prefix contexts. This is
+     *   optional for back-compatibility reasons, but ideally request session
+     *   string should always be passed on creating responses.
+     */
+    public function __construct(array $data = [], $request_session = NULL) {
+        $this->session = $request_session;
+        parent::__construct($data);
+    }
+
+    /**
      * Get response fulfillment.
      *
      * @return \DialogFlow\Model\Fulfillment
@@ -78,6 +101,28 @@ class Response extends Base {
         $contexts = $this->get('outputContexts');
         $contexts[] = $context;
         $this->add('outputContexts', $contexts);
+    }
+
+    /**
+     * Helper to create V2 Context.
+     *
+     * V2 API contexts names must be prefixed with the request session. This
+     * helper allows developers to create contexts without passing the session.
+     *
+     * @param string $name
+     *   Context name, if not already it will be prefixed with session.
+     * @param array $data
+     *   Context object data.
+     *
+     * @return \DialogFlow\Model\Context
+     *   A context instance.
+     */
+    public function createContextFromSession($name, array $data = []) {
+        $data['name'] = $name;
+        if ($this->session && isset($data['name']) && !preg_match(Context::CONTEXT_NAME_REGEX, $data['name'])) {
+            $data['name'] = rtrim($this->session , '/') . '/contexts/' . $data['name'];
+        }
+        return new Context($data);
     }
 
     public function jsonSerialize() {
