@@ -31,11 +31,29 @@ class Context extends Base
     }
 
     /**
+     * Get the context name.
+     *
+     * Contexts names on V2 are prefixed with request session path. This
+     * function strips the session before returning the name. Set $full argument
+     * to TRUE in order to return the context full name.
+     *
+     * @param bool $full
+     *   Set to TRUE to return the full qualified context name, including the
+     *   session. By default the short name - without session prefix - will be
+     *   returned.
+     *
      * @return string
      */
-    public function getName()
+    public function getName($full = FALSE)
     {
-        return parent::get('name');
+        if ($full) {
+            return parent::get('name');
+        }
+
+        $regex = explode('/contexts/[a-zA-Z0-9-_]+$', static::CONTEXT_NAME_REGEX);
+        preg_match($regex[0] . '/contexts/([a-zA-Z0-9-_]+$)' . $regex[1], parent::get('name'), $matches);
+
+        return $matches[1];
     }
 
     /**

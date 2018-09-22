@@ -170,4 +170,22 @@ EOL;
         $this->assertEquals('Text defined in Dialogflow\'s console for the intent that was matched', $fulfillment->getSpeech());
     }
 
+    /**
+     * Test request contexts short/full names.
+     *
+     * @covers \DialogFlow\Model\Context
+     */
+    public function testContextsNames() {
+        $request = new Request($this->request_body);
+        $this->assertEquals('generic-context-name', $request->getResult()->getContexts()[0]->getName());
+
+        $context = new Context();
+        $context->add('name', 'projects/your-agents-project-id/agent/sessions/88d13aa8-2999-4f71-b233-39cbf3a824a0/contexts/new-generic-context-name');
+        $context->add('parameters', ['param1' => 'foo', 'param2' => 'bar']);
+        $context->add('lifespan', 5);
+
+        $this->assertEquals('new-generic-context-name', $context->getName());
+        $this->assertEquals('projects/your-agents-project-id/agent/sessions/88d13aa8-2999-4f71-b233-39cbf3a824a0/contexts/new-generic-context-name', $context->getName(TRUE));
+    }
+
 }
