@@ -52,10 +52,42 @@ class Fulfillment extends Base
      * @return array
      *   The fulfillment messages.
      *
-     * TODO: Implement messages.
      */
-    public function getMessages() {
-        return [];
+    public function getMessages()
+    {
+      return parent::get('messages');
+    }
+
+    /**
+     * Set fulfilment Messages.
+     *
+     * @param array $messages
+     */
+    public function setMessages(array $messages)
+    {
+      parent::add('messages', $messages);
+    }
+
+    /**
+     * Return fulfillment event.
+     *
+     * @return array
+     *   The fulfillment event.
+     *
+     */
+    public function getEvent()
+    {
+      return parent::get('event');
+    }
+
+    /**
+     * Set fulfilment event.
+     *
+     * @param array $messages
+     */
+    public function setEvent(array $event)
+    {
+      parent::add('event', $event);
     }
 
 }

@@ -69,6 +69,7 @@ class Response extends Base {
      * Set response speech.
      *
      * @param string $string
+     *
      *   The response speech message.
      *
      * @deprecated use fulfilment setter add().
@@ -126,14 +127,28 @@ class Response extends Base {
     }
 
     public function jsonSerialize() {
-        // Prepend fulfillmentText.
-        $json = ['fulfillmentText' => $this->getFulfillment()->getText()];
-
-        // Append fulfillmentMessages, if any.
+        $json = [];
+        if ($text = $this->getFulfillment()->getText()) {
+          $json['fulfillmentText'] = $this->getFulfillment()->getText();
+        }
         if ($messages = $this->getFulfillment()->getMessages()) {
-            $json['fulfillmentMessages'] = array_map(function($message) {
-                return $message->jsonSerialize();
-            }, $messages);
+          $json['fulfillmentMessages'] = [
+              ['text' => [
+                'text' => $messages['texts'],
+              ]],
+              ['payload' => [
+                'richContent' =>
+                  [$messages['messages']],
+              ]],
+          ];
+        }
+
+        if ($event = $this->getFulfillment()->getEvent()) {
+          $json['followupEventInput'] = array_filter([
+            "name" => $event['name'],
+            "parameters" => $event['parameters'],
+            "languageCode" => $event->langcode,
+          ], fn ($e) => $e);
         }
 
         return $json + parent::jsonSerialize();
