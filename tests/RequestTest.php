@@ -22,7 +22,7 @@ class RequestTest extends TestCase {
     /**
      * {@inheritdoc}
      */
-    public function setUp() {
+    protected function setUp(): void {
         // V2 JSON example, extended from:
         // https://raw.githubusercontent.com/dialogflow/fulfillment-webhook-json/master/requests/v2/request.json
         $body = <<<EOL
@@ -125,9 +125,9 @@ EOL;
      *
      * @covers \DialogFlow\Model\Context
      *
-     * @expectedException \DialogFlow\Exception\InvalidContextException
      */
     public function testExceptionIsThrownCreatingContextWithOldNameFormat() {
+        $this->expectException(\DialogFlow\Exception\InvalidContextException::class);
         $context = new Context();
         $context->add('name', 'invalid context name');
     }
@@ -137,9 +137,9 @@ EOL;
      *
      * @covers \DialogFlow\Model\Context
      *
-     * @expectedException \DialogFlow\Exception\InvalidContextException
      */
     public function testExceptionIsThrownAddingOldNameFormatToContext() {
+        $this->expectException(\DialogFlow\Exception\InvalidContextException::class);
         $context = new Context(['name' => 'invalid name']);
     }
 
