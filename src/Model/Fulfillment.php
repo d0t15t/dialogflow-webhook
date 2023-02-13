@@ -55,17 +55,17 @@ class Fulfillment extends Base
      */
     public function getMessages()
     {
-      return parent::get('messages');
+        return parent::get('messages');
     }
 
     /**
      * Set fulfilment Messages.
      *
-     * @param array $messages
+     * @param Messages $messages
      */
-    public function setMessages(array $messages)
+    public function setMessages(Messages $messages)
     {
-      parent::add('messages', $messages);
+        parent::add('messages', $messages);
     }
 
     /**
@@ -77,17 +77,15 @@ class Fulfillment extends Base
      */
     public function getEvent()
     {
-      return parent::get('event');
+        return parent::get('event');
     }
 
     /**
      * Set fulfilment event.
-     *
-     * @param array $messages
      */
-    public function setEvent(array $event)
+    public function setEvent(Event $event)
     {
-      parent::add('event', $event);
+       parent::add('event', $event);
     }
 
 }

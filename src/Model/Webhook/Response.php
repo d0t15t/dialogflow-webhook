@@ -127,28 +127,14 @@ class Response extends Base {
     }
 
     public function jsonSerialize() {
-        $json = [];
-        if ($text = $this->getFulfillment()->getText()) {
-          $json['fulfillmentText'] = $this->getFulfillment()->getText();
-        }
+        $json = ['fulfillmentText' => $this->getFulfillment()->getText()];
+
         if ($messages = $this->getFulfillment()->getMessages()) {
-          $json['fulfillmentMessages'] = [
-              ['text' => [
-                'text' => $messages['texts'],
-              ]],
-              ['payload' => [
-                'richContent' =>
-                  [$messages['messages']],
-              ]],
-          ];
+            $json['fulfillmentMessages'] = $messages->jsonSerialize();
         }
 
         if ($event = $this->getFulfillment()->getEvent()) {
-          $json['followupEventInput'] = array_filter([
-            "name" => $event['name'],
-            "parameters" => $event['parameters'],
-            "languageCode" => $event->langcode,
-          ], fn ($e) => $e);
+            $json['followupEventInput'] = $event->jsonSerialize();
         }
 
         return $json + parent::jsonSerialize();
